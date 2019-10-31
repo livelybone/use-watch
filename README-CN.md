@@ -1,7 +1,7 @@
 # use-watch
 [![NPM Version](http://img.shields.io/npm/v/use-watch.svg?style=flat-square)](https://www.npmjs.com/package/use-watch)
 [![Download Month](http://img.shields.io/npm/dm/use-watch.svg?style=flat-square)](https://www.npmjs.com/package/use-watch)
-![gzip with dependencies: kb](https://img.shields.io/badge/gzip--with--dependencies-kb-brightgreen.svg "gzip with dependencies: kb")
+![gzip with dependencies: 0.5kb](https://img.shields.io/badge/gzip--with--dependencies-0.5kb-brightgreen.svg "gzip with dependencies: 0.5kb")
 ![typescript](https://img.shields.io/badge/typescript-supported-blue.svg "typescript")
 ![pkg.module](https://img.shields.io/badge/pkg.module-supported-blue.svg "pkg.module")
 
