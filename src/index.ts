@@ -37,7 +37,7 @@ export interface WatchOptions {
 export default function useWatch<T extends any>(
   watches: T,
   watcher: Watcher<T>,
-  options: any = {},
+  options: WatchOptions = {},
 ): void {
   const shouldCall = useRef(options.immediate)
   const call = useRef<{ preWatches: T; watcher: Watcher<T> }>({

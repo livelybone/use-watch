@@ -35,7 +35,7 @@ interface WatchOptions {
 declare function useWatch<T extends any>(
   watches: T,
   watcher: Watcher<T>,
-  options?: any,
+  options?: WatchOptions,
 ): void
 
 export default useWatch
