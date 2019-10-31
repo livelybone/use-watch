@@ -17,27 +17,54 @@
 
 <script type="text/babel">
 const module = document.getElementById('module')
+const context = React.createContext()
+
+const Comp = () => {
+  const [state, setState] = React.useState({ num: 0, a: 3 })
+
+  const a = React.useContext(context)
+  console.log('render Comp', state)
+  console.log(a)
+
+  return (
+    <div>
+      <button onClick={() => setState(pre => ({ num: pre.num }))}>add</button>
+      {state.a}
+    </div>
+  )
+}
 
 const App = () => {
   const [count, setCount] = React.useState(0)
   const [count1, setCount1] = React.useState(0)
-  const [count2, setCount2] = React.useState(0)
+  const [count2, setCount2] = React.useState({ num: 0 })
 
   useWatch(count, (val) => console.log('---------- \ncount change to: ', val), { immediate: true })
   useWatch(count1, (val) => console.log('---------- \ncount1 change to: ', val), { immediate: false })
   useWatch(count2, (val) => console.log('---------- \ncount2 change to: ', val), { immediate: false })
   useWatch(React.useMemo(() => ({ count, count1 }), [count, count1]), (val) => {
-    console.log('---------- \ncount or count1 change to: ' , val)
+    console.log('---------- \ncount or count1 change to: ', val)
     console.log('now the count2 is: ', count2)
   }, { immediate: false })
 
-  console.log('render')
+  React.useEffect(() => {
+    console.log('---------- \ncount or count1 change to: ', count, count1)
+    console.log('now the count2 is: ', count2)
+  }, [count, count1])
+
+  console.log('render App')
+
+  const [ct, setCt] = React.useState({})
+  window.setCt = setCt
   return (
-    <div>
-      <button onClick={() => setCount(pre => pre + 1)}>add count</button>
-      <button onClick={() => setCount1(pre => pre + 1)}>add count1</button>
-      <button onClick={() => setCount2(pre => pre + 1)}>add count2</button>
-    </div>
+    <context.Provider value={ct}>
+      <div>
+        <button onClick={() => setCount(pre => pre + 1)}>add count</button>
+        <button onClick={() => setCount1(pre => pre + 1)}>add count1</button>
+        <button onClick={() => setCount2(pre => ({num: pre.num + 1}))}>add count2</button>
+        <Comp setCt={setCt} />
+      </div>
+    </context.Provider>
   )
 }
 
