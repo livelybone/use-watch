@@ -40,17 +40,16 @@ export default function useWatch<T extends any>(
   options: WatchOptions = {},
 ): void {
   const shouldCall = useRef(options.immediate)
-  const call = useRef<{ preWatches: T; watcher: Watcher<T> }>({
-    preWatches: watches,
+  const call = useRef<{ preWatches: T | undefined; watcher: Watcher<T> }>({
+    preWatches: undefined,
     watcher,
   })
   call.current.watcher = watcher
 
   useLayoutEffect(() => {
-    if (shouldCall.current) {
-      call.current!.watcher(watches, call.current!.preWatches)
-      call.current!.preWatches = watches
-    }
+    if (shouldCall.current)
+      call.current!.watcher(watches, call.current.preWatches)
+    call.current!.preWatches = watches
     shouldCall.current = true
   }, [watches])
 }
