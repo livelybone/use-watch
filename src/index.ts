@@ -13,6 +13,16 @@ export interface WatchOptions {
    * Default is false
    * */
   immediate?: boolean
+
+  /**
+   * Use for debounce
+   * */
+  debounce?: number
+
+  /**
+   * Use for throttle
+   * */
+  throttle?: number
 }
 
 /**
@@ -39,6 +49,12 @@ export default function useWatch<T extends any>(
   watcher: Watcher<T>,
   options: WatchOptions = {},
 ): void {
+  const time = useRef({
+    lastWatch: 0,
+    lastCall: 0,
+    debounce: options.debounce,
+    throttle: options.throttle,
+  })
   const shouldCall = useRef(options.immediate)
   const call = useRef<{ preWatches: T | undefined; watcher: Watcher<T> }>({
     preWatches: undefined,
@@ -47,9 +63,24 @@ export default function useWatch<T extends any>(
   call.current.watcher = watcher
 
   useLayoutEffect(() => {
-    if (shouldCall.current)
-      call.current!.watcher(watches, call.current.preWatches)
-    call.current!.preWatches = watches
+    const now = Date.now()
+
+    if (
+      shouldCall.current &&
+      ((!options.debounce && !options.throttle) ||
+        (options.debounce && now - time.current.lastWatch > options.debounce) ||
+        (options.throttle && now - time.current.lastCall > options.throttle))
+    ) {
+      try {
+        call.current!.watcher(watches, call.current.preWatches)
+        time.current.lastCall = now
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
+    call.current.preWatches = watches
     shouldCall.current = true
-  }, [watches])
+    time.current.lastWatch = now
+  }, [options.debounce, options.throttle, watches])
 }

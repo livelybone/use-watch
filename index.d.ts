@@ -1,7 +1,6 @@
 interface Watcher<T extends any> {
   (watches: T, preWatches?: T): any
 }
-
 interface WatchOptions {
   /**
    * 是否在初始的时候就运行 watcher
@@ -11,8 +10,15 @@ interface WatchOptions {
    * Default is false
    * */
   immediate?: boolean
+  /**
+   * Use for debounce
+   * */
+  debounce?: number
+  /**
+   * Use for throttle
+   * */
+  throttle?: number
 }
-
 /**
  * @param watches               依赖的集合
  *                              如果 watches 为引用类型，请使用 useMemo 来生成, 否则回调有可能会不停的被调用
