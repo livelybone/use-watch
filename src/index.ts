@@ -15,7 +15,7 @@ export interface WatchOptions {
   immediate?: boolean
 
   /**
-   * Use for debounce
+   * Use for debounce, priority higher than throttle
    * */
   debounce?: number
 
@@ -50,10 +50,10 @@ export default function useWatch<T extends any>(
   options: WatchOptions = {},
 ): void {
   const time = useRef({
-    lastWatch: 0,
     lastCall: 0,
-    debounce: options.debounce,
     throttle: options.throttle,
+    debounce: options.debounce,
+    timer: null as any,
   })
   const shouldCall = useRef(options.immediate)
   const call = useRef<{ preWatches: T | undefined; watcher: Watcher<T> }>({
@@ -65,12 +65,7 @@ export default function useWatch<T extends any>(
   useLayoutEffect(() => {
     const now = Date.now()
 
-    if (
-      shouldCall.current &&
-      ((!options.debounce && !options.throttle) ||
-        (options.debounce && now - time.current.lastWatch > options.debounce) ||
-        (options.throttle && now - time.current.lastCall > options.throttle))
-    ) {
+    const run = () => {
       try {
         call.current!.watcher(watches, call.current.preWatches)
         time.current.lastCall = now
@@ -79,8 +74,19 @@ export default function useWatch<T extends any>(
       }
     }
 
+    if (shouldCall.current) {
+      if (options.debounce) {
+        clearTimeout(time.current.timer)
+        time.current.timer = setTimeout(run, options.debounce)
+      } else if (
+        !options.throttle ||
+        (options.throttle && now - time.current.lastCall > options.throttle)
+      ) {
+        run()
+      }
+    }
+
     call.current.preWatches = watches
     shouldCall.current = true
-    time.current.lastWatch = now
   }, [options.debounce, options.throttle, watches])
 }

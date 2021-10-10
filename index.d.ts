@@ -11,7 +11,7 @@ interface WatchOptions {
    * */
   immediate?: boolean
   /**
-   * Use for debounce
+   * Use for debounce, priority higher than throttle
    * */
   debounce?: number
   /**
